@@ -1,0 +1,41 @@
+generate.js
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "只支持 POST 请求" });
+  }
+
+  const { location, huxing, size, price, highlights, example } = req.body;
+
+  const prompt = `
+你是一个专业的房产文案撰写助手。请根据以下信息写一段适合小红书的推广文案：
+位置：${location}
+户型：${huxing}
+面积：${size}
+租金：${price}
+亮点：${highlights}
+参考文案：${example}
+请模仿参考文案的风格，但不要照抄，生成一段新的文案。
+`;
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.choices[0].message.content;
+
+    res.status(200).json({ text });
+  } catch (err) {
+    res.status(500).json({ error: "生成失败", details: err.message });
+  }
+}
