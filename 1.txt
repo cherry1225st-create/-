@@ -1,0 +1,61 @@
+index.html
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>房源AI文案助手</title>
+</head>
+<body>
+  <h1>🏠 房源AI文案助手</h1>
+
+  <form id="form">
+    <label>房子位置：</label><br>
+    <input type="text" id="location"><br><br>
+
+    <label>户型：</label><br>
+    <input type="text" id="huxing"><br><br>
+
+    <label>面积：</label><br>
+    <input type="text" id="size"><br><br>
+
+    <label>租金：</label><br>
+    <input type="text" id="price"><br><br>
+
+    <label>亮点：</label><br>
+    <input type="text" id="highlights"><br><br>
+
+    <label>参考文案：</label><br>
+    <textarea id="example" rows="4" cols="40"></textarea><br><br>
+
+    <button type="submit">生成文案</button>
+  </form>
+
+  <h2>✨ AI生成的文案：</h2>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        location: document.getElementById("location").value,
+        huxing: document.getElementById("huxing").value,
+        size: document.getElementById("size").value,
+        price: document.getElementById("price").value,
+        highlights: document.getElementById("highlights").value,
+        example: document.getElementById("example").value
+      };
+
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      document.getElementById("result").innerText = result.text;
+    });
+  </script>
+</body>
+</html>
